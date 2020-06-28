@@ -1,0 +1,15 @@
+body {
+    background: black;
+}
+
+.slot {
+    color: orange;
+}
+
+.reel {
+    background: #61826f;
+}
+
+.button {
+    background: #8fa4ff;
+}
