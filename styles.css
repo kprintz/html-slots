@@ -23,8 +23,33 @@ body {
     flex-grow: 1;
     background: #61826f;
     margin: 10px;
-    padding: 30px;
     font-size: 2rem;
+    max-height: 60px;
+    overflow: hidden;
+}
+
+.reel-holder {
+    transition: all 1s linear 0s;
+}
+
+.reel-opt {
+    width: 70px;
+    height: 60px;
+    background: url("slots-sprite.png");
+    margin: auto;
+}
+
+.reel-opt-1 {
+    background-position: -80px 0;
+}
+.reel-opt-2 {
+    background-position: -160px 0;
+}
+.reel-opt-3 {
+    background-position: -235px 0;
+}
+.reel-opt-4 {
+    background-position: -305px 0;
 }
 
 .button {

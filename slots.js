@@ -1,38 +1,63 @@
 class SlotMachine {
     constructor() {
+        // getting DOM elements
         this.classButton = document.getElementById('slot-button-1');
         this.classButton.addEventListener('click', this.handleUserClick.bind(this));
         this.reels = document.getElementsByClassName('reel');
+        this.reelHolders = document.getElementsByClassName('reel-holder');
         this.spin = 0;
+        this.target = document.getElementById('spin-message');
     };
 
-    handleUserClick () {
+    handleUserClick() {
+        // reset the spin count and start spinning reel
         document.getElementsByTagName('body')[0].style.background = 'black';
         this.spin = 0;
+        this.target.textContent = "";
         this.spinSequence();
     }
 
     spinSequence() {
-        if (this.spin > 19) {
-            let target = document.getElementById('spin-message');
-
+        // spins the reel
+        for (let reel of this.reelHolders) {
+            reel.style.transition = 'all 1s linear 0s';
+            reel.style.transform = 'translateY(-240px)';
+        }
+        // determine winner and stop spin
+        if (this.spin > 6) {
+            this.stopReels();
             if (this.checkWin()) {
                 document.getElementsByTagName('body')[0].style.background = 'green';
-                return target.textContent = "Winner!";
+                return this.target.textContent = "Winner!";
             }
-            return target.textContent = 'you suck';
+            return this.target.textContent = 'you suck';
         }
-        for (let reel of this.reels) {
-            reel.textContent = this.getRandNumber();
-        }
-        setTimeout(this.spinSequence.bind(this), 100);
+        // reset reel and increase spin count
+        setTimeout(this.resetSequence.bind(this), 990);
         this.spin++;
     }
 
+    stopReels() {
+        for (let reel of this.reelHolders) {
+            let randReelPixelHeight = this.getRandNumber() * 60;
+            reel.style.transform = 'translateY(-' + randReelPixelHeight + 'px)';
+        }
+    }
+
+    resetSequence() {
+        // secretly instantly reset reel to 0
+        for (let reel of this.reelHolders) {
+            reel.style.transition = 'none';
+            reel.style.transform = 'translateY(0px)';
+        }
+        // return to beginning of animation
+        setTimeout(this.spinSequence.bind(this), 10);
+    }
+
     checkWin() {
-        let currentReelValue = this.reels[0].textContent;
-        for (let reel of this.reels) {
-            if (currentReelValue !== reel.textContent) {
+        let currentReelValue = this.reelHolders[0].style.transform;
+        for (let reel of this.reelHolders) {
+            if (currentReelValue !== reel.style.transform) {
                 return false;
             }
         }
@@ -40,7 +65,7 @@ class SlotMachine {
     }
 
     getRandNumber() {
-        return Math.floor(Math.random() * (3 - 1) + 1);
+        return Math.floor(Math.random() * (5 - 1) + 1);
     }
 }
 
