@@ -29,7 +29,7 @@ body {
 }
 
 .reel-holder {
-    transition: all 1s linear 0s;
+    transition: all 400ms linear 0s;
 }
 
 .reel-opt {

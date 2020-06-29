@@ -1,12 +1,16 @@
 class SlotMachine {
-    constructor() {
+    constructor(settings) {
         // getting DOM elements
         this.classButton = document.getElementById('slot-button-1');
         this.classButton.addEventListener('click', this.handleUserClick.bind(this));
-        this.reels = document.getElementsByClassName('reel');
         this.reelHolders = document.getElementsByClassName('reel-holder');
         this.spin = 0;
         this.target = document.getElementById('spin-message');
+        this.winMessage = settings.winMessage;
+        this.loseMessage = settings.loseMessage;
+        this.reelPosibilities = settings.reelPosibilities;
+        this.reelHeight = settings.reelHeight;
+        this.spinsLoopTilStop = settings.spinsLoopTilStop;
     };
 
     handleUserClick() {
@@ -20,26 +24,26 @@ class SlotMachine {
     spinSequence() {
         // spins the reel
         for (let reel of this.reelHolders) {
-            reel.style.transition = 'all 1s linear 0s';
-            reel.style.transform = 'translateY(-240px)';
+            reel.style.transition = 'all 400ms linear 0s';
+            reel.style.transform = 'translateY(-'+ this.reelPosibilities * this.reelHeight +'px)';
         }
         // determine winner and stop spin
-        if (this.spin > 6) {
+        if (this.spin > this.spinsLoopTilStop) {
             this.stopReels();
             if (this.checkWin()) {
                 document.getElementsByTagName('body')[0].style.background = 'green';
-                return this.target.textContent = "Winner!";
+                return this.target.textContent = this.winMessage;
             }
-            return this.target.textContent = 'you suck';
+            return this.target.textContent = this.loseMessage;
         }
         // reset reel and increase spin count
-        setTimeout(this.resetSequence.bind(this), 990);
+        setTimeout(this.resetSequence.bind(this), 390);
         this.spin++;
     }
 
     stopReels() {
         for (let reel of this.reelHolders) {
-            let randReelPixelHeight = this.getRandNumber() * 60;
+            let randReelPixelHeight = this.getRandNumber() * this.reelHeight;
             reel.style.transform = 'translateY(-' + randReelPixelHeight + 'px)';
         }
     }
@@ -65,8 +69,16 @@ class SlotMachine {
     }
 
     getRandNumber() {
-        return Math.floor(Math.random() * (5 - 1) + 1);
+        return Math.floor(Math.random() * this.reelPosibilities + 1);
     }
 }
 
-let slotMachine = new SlotMachine();
+let slotMachine = new SlotMachine({
+    numberOfReels: 3,
+    winMessage: 'Winner!',
+    loseMessage: 'No goood',
+    reelPosibilities: 4,
+    reelHeight: 60,
+    spinsLoopTilStop: 3,
+    spinMilliseconds: 400
+});
