@@ -16,26 +16,27 @@ class SlotMachine {
         this.reelTemplate = document.getElementById('reel-1');
 
         this.createSlotsHtml();
-    };
+    }
 
     createSlotsHtml() {
         let reelId = 1;
+        let masterElement = document.createElement('div');
+        let inputDiv = document.querySelector('.reels');
+        masterElement.className = 'master-element';
         for (let i = 0; i < this.reelRow; i++) {
-
-
-
-            
+            let reelRowElement = document.createElement('div');
+            reelRowElement.className = 'master-element-reelRow';
             for (let e = 0; e < this.reelCol; e++) {
+                // Inject single reel into current row
                 let newReel = this.reelTemplate.cloneNode(true);
                 newReel.id = 'reel-' + reelId;
                 reelId++;
-                this.reelTemplate.after(newReel);
+                reelRowElement.appendChild(newReel);
             }
-
-
-
-
+            //todo break to next row
+            masterElement.appendChild(reelRowElement);
         }
+        inputDiv.insertAdjacentElement('beforeend', masterElement);
         this.reelTemplate.remove();
     }
 
@@ -51,14 +52,14 @@ class SlotMachine {
         // spins the reel
         for (let reel of this.reelHolders) {
             reel.style.transition = 'all 400ms linear 0s';
-            reel.style.transform = 'translateY(-'+ this.reelPossibilities * this.reelHeight +'px)';
+            reel.style.transform = 'translateY(-' + this.reelPossibilities * this.reelHeight + 'px)';
         }
         // determine winner and stop spin
         if (this.spin > this.spinsLoopTilStop) {
             this.stopReels();
             if (this.checkWin()) {
                 document.getElementsByTagName('body')[0].style.background = 'green';
-                return this.target.textContent = this.winMessage;
+                return this.target.textContent = this.winMessage + ' Wins: ';
             }
             return this.target.textContent = this.loseMessage;
         }
@@ -85,13 +86,73 @@ class SlotMachine {
     }
 
     checkWin() {
-        let currentReelValue = this.reelHolders[0].style.transform;
-        for (let reel of this.reelHolders) {
-            if (currentReelValue !== reel.style.transform) {
-                return false;
-            }
+        if(this.assignReelArray() > 0) {
+            return true;
         }
-        return true;
+
+
+
+
+
+
+        //for (let reel of this.reelHolders) {
+        //    if (currentReelValue !== reel.style.transform) {
+        //        return false;
+        //    }
+        //}
+        //return true;
+    }
+
+    assignReelArray() {
+        let reelArray = [];
+        //for (let reel of this.reelHolders) {
+        for (let i = 0; i < this.reelHolders.length; i++) {
+            reelArray[i] = this.reelHolders[i].style.transform;
+        }
+        return this.checkHorizontalWins(reelArray);
+    }
+
+
+
+    getCornerNode() {
+
+
+    }
+
+    getDiagonalFromNode(node) {
+
+    }
+
+    checkHorizontalWins(reelArray) {
+        let currentReelValue;
+        let compareReelValue;
+        let lineCount;
+        let winCount  = 0;
+        for (let i = 0; i < this.reelRow; i++) {
+            lineCount = 0;
+            for (let j = 0 + i * 3; j < (i + 1) * this.reelCol - 1; j++) {
+            //for (let reel of this.reelHolders) {
+                currentReelValue = reelArray[j];
+                compareReelValue = reelArray[j + 1];
+                if (currentReelValue === compareReelValue) {
+                    lineCount++;
+                }
+                console.log('linecount: ' + lineCount);
+            }
+            if (lineCount === 2) {
+                winCount++;
+            }
+            console.log('wincount: ' + winCount);
+
+        }
+        if (winCount < 1) {
+            return 0;
+        }
+        return winCount;
+    }
+
+    getVerticalFromNode(node) {
+
     }
 
     getRandNumber() {

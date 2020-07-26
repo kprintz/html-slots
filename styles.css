@@ -28,6 +28,10 @@ body {
     overflow: hidden;
 }
 
+.master-element-reelRow {
+    display: flex;
+}
+
 .reel-holder {
     transition: all 400ms linear 0s;
 }
