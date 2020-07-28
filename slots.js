@@ -14,6 +14,7 @@ class SlotMachine {
         this.reelRow = settings.reelRow;
         this.reelCol = settings.reelCol;
         this.reelTemplate = document.getElementById('reel-1');
+        this.isDebug = true;
 
         this.createSlotsHtml();
     }
@@ -57,9 +58,10 @@ class SlotMachine {
         // determine winner and stop spin
         if (this.spin > this.spinsLoopTilStop) {
             this.stopReels();
-            if (this.checkWin()) {
+            let winCount = this.countWins();
+            if (winCount > 0) {
                 document.getElementsByTagName('body')[0].style.background = 'green';
-                return this.target.textContent = this.winMessage + ' Wins: ';
+                return this.target.textContent = this.winMessage + ' Wins: ' + winCount;
             }
             return this.target.textContent = this.loseMessage;
         }
@@ -85,74 +87,104 @@ class SlotMachine {
         setTimeout(this.spinSequence.bind(this), 10);
     }
 
-    checkWin() {
-        if(this.assignReelArray() > 0) {
-            return true;
+    countWins() {
+        let numHorizontalWins = this.checkHorizontalWins();
+        let numVerticalWins = this.checkVerticalWins();
+        let numDiagonalWins = this.checkDiagonalWins();
+        return numHorizontalWins + numVerticalWins + numDiagonalWins;
+
+    }
+
+    checkDiagonalWins() {
+        let currentReelValue;
+        let compareReelValue;
+        let lineCount = 0;
+        let winCount = 0;
+        for (let i = 0; i < (this.reelRow + 1) * (this.reelRow - 1); i += (this.reelRow + 1)) {
+            currentReelValue = this.reelHolders[i].style.transform;
+            compareReelValue = this.reelHolders[i + (this.reelRow + 1)].style.transform;
+            if (currentReelValue === compareReelValue) {
+                lineCount++;
+            }
         }
-
-
-
-
-
-
-        //for (let reel of this.reelHolders) {
-        //    if (currentReelValue !== reel.style.transform) {
-        //        return false;
-        //    }
-        //}
-        //return true;
-    }
-
-    assignReelArray() {
-        let reelArray = [];
-        //for (let reel of this.reelHolders) {
-        for (let i = 0; i < this.reelHolders.length; i++) {
-            reelArray[i] = this.reelHolders[i].style.transform;
+        if (this.isDebug) {
+            console.log('diagonal linecount: ' + lineCount);
         }
-        return this.checkHorizontalWins(reelArray);
+        if (lineCount === (this.reelRow - 1)) {
+            winCount++;
+        }
+        lineCount = 0;
+        for (let j = this.reelRow - 1; j < this.reelRow * (this.reelRow - 1); j += (this.reelRow - 1)) {
+            currentReelValue = this.reelHolders[j].style.transform;
+            compareReelValue = this.reelHolders[j + (this.reelRow - 1)].style.transform;
+            if (currentReelValue === compareReelValue) {
+                lineCount++;
+            }
+        }
+        if (this.isDebug) {
+            console.log('diagonal linecount: ' + lineCount);
+        }
+        if (lineCount === (this.reelRow - 1)) {
+            winCount++;
+        }
+        if (this.isDebug) {
+            console.log('diagonal wincount: ' + winCount);
+        }
+        return winCount;
     }
 
-
-
-    getCornerNode() {
-
-
+    checkHorizontalWins() {
+        let currentReelValue;
+        let compareReelValue;
+        let lineCount;
+        let winCount = 0;
+        for (let i = 0; i < this.reelRow; i++) {
+            lineCount = 0;
+            for (let j = i * this.reelRow; j < (i + 1) * this.reelCol - 1; j++) {
+                currentReelValue = this.reelHolders[j].style.transform;
+                compareReelValue = this.reelHolders[j + 1].style.transform;
+                if (currentReelValue === compareReelValue) {
+                    lineCount++;
+                }
+            }
+            if (lineCount === (this.reelRow - 1)) {
+                winCount++;
+            }
+        }
+        if (this.isDebug) {
+            console.log('horizontal linecount: ' + lineCount);
+        }
+        if (this.isDebug) {
+            console.log('horizontal wincount: ' + winCount);
+        }
+        return winCount;
     }
 
-    getDiagonalFromNode(node) {
-
-    }
-
-    checkHorizontalWins(reelArray) {
+    checkVerticalWins() {
         let currentReelValue;
         let compareReelValue;
         let lineCount;
         let winCount  = 0;
         for (let i = 0; i < this.reelRow; i++) {
             lineCount = 0;
-            for (let j = 0 + i * 3; j < (i + 1) * this.reelCol - 1; j++) {
-            //for (let reel of this.reelHolders) {
-                currentReelValue = reelArray[j];
-                compareReelValue = reelArray[j + 1];
+            for (let j = i; j < i + (this.reelCol * (this.reelCol - 1)); j += this.reelCol) {
+                currentReelValue = this.reelHolders[j].style.transform;
+                compareReelValue = this.reelHolders[j + this.reelCol].style.transform;
                 if (currentReelValue === compareReelValue) {
                     lineCount++;
                 }
-                console.log('linecount: ' + lineCount);
             }
-            if (lineCount === 2) {
+            if (lineCount === (this.reelRow - 1)) {
                 winCount++;
             }
-            console.log('wincount: ' + winCount);
-
         }
-        if (winCount < 1) {
-            return 0;
+        if (this.isDebug) {
+            console.log('vertical linecount: ' + lineCount);
+        }
+        if (this.isDebug) {
+            console.log('vertical wincount: ' + winCount);
         }
         return winCount;
-    }
-
-    getVerticalFromNode(node) {
-
     }
 
     getRandNumber() {
