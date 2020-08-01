@@ -13,6 +13,7 @@ class SlotMachine {
         this.spinsLoopTilStop = settings.spinsLoopTilStop;
         this.reelRow = settings.reelRow;
         this.reelCol = settings.reelCol;
+        this.spinMilliseconds = settings.spinMilliseconds;
         this.reelTemplate = document.getElementById('reel-1');
         this.isDebug = true;
 
@@ -34,7 +35,6 @@ class SlotMachine {
                 reelId++;
                 reelRowElement.appendChild(newReel);
             }
-            //todo break to next row
             masterElement.appendChild(reelRowElement);
         }
         inputDiv.insertAdjacentElement('beforeend', masterElement);
@@ -52,29 +52,40 @@ class SlotMachine {
     spinSequence() {
         // spins the reel
         for (let reel of this.reelHolders) {
-            reel.style.transition = 'all 400ms linear 0s';
+            reel.style.transition = 'all ' + this.spinMilliseconds + 'ms linear 0s';
             reel.style.transform = 'translateY(-' + this.reelPossibilities * this.reelHeight + 'px)';
         }
         // determine winner and stop spin
         if (this.spin > this.spinsLoopTilStop) {
-            this.stopReels();
-            let winCount = this.countWins();
-            if (winCount > 0) {
-                document.getElementsByTagName('body')[0].style.background = 'green';
-                return this.target.textContent = this.winMessage + ' Wins: ' + winCount;
-            }
-            return this.target.textContent = this.loseMessage;
+            return this.stopReels();
         }
         // reset reel and increase spin count
         setTimeout(this.resetSequence.bind(this), 390);
         this.spin++;
     }
 
-    stopReels() {
-        for (let reel of this.reelHolders) {
-            let randReelPixelHeight = this.getRandNumber() * this.reelHeight;
-            reel.style.transform = 'translateY(-' + randReelPixelHeight + 'px)';
+    spinSequenceEnd() {
+        let winCount = this.countWins();
+        if (winCount > 0) {
+            document.getElementsByTagName('body')[0].style.background = 'green';
+            return this.target.textContent = this.winMessage + ' Wins: ' + winCount;
         }
+        return this.target.textContent = this.loseMessage;
+    }
+
+    stopReels() {
+        let self = this;
+        this.getRandNumber(function() {
+            // this reference is now XMLHttpRequest
+            let randNumbers = JSON.parse(this.response);
+            let countReels = 0;
+            for (let reel of self.reelHolders) {
+                let randReelPixelHeight = randNumbers[countReels]  * self.reelHeight;
+                reel.style.transform = 'translateY(-' + randReelPixelHeight + 'px)';
+                countReels++;
+            }
+            self.spinSequenceEnd();
+        });
     }
 
     resetSequence() {
@@ -90,9 +101,67 @@ class SlotMachine {
     countWins() {
         let numHorizontalWins = this.checkHorizontalWins();
         let numVerticalWins = this.checkVerticalWins();
-        let numDiagonalWins = this.checkDiagonalWins();
+        let numDiagonalWins = 0;
+        if (this.reelRow === this.reelCol) {
+            numDiagonalWins = this.checkDiagonalWins();
+        }
+
         return numHorizontalWins + numVerticalWins + numDiagonalWins;
 
+    }
+
+    checkHorizontalWins() {
+        let currentReelValue;
+        let compareReelValue;
+        let lineCount;
+        let winCount = 0;
+        for (let i = 0; i < this.reelRow; i++) {
+            lineCount = 0;
+            for (let j = i * this.reelCol; j < (i + 1) * this.reelCol - 1; j++) {
+                currentReelValue = this.reelHolders[j].style.transform;
+                compareReelValue = this.reelHolders[j + 1].style.transform;
+                if (currentReelValue === compareReelValue) {
+                    lineCount++;
+                }
+            }
+            if (lineCount === (this.reelCol - 1)) {
+                winCount++;
+            }
+        }
+        if (this.isDebug) {
+            console.log('horizontal linecount: ' + lineCount);
+        }
+        if (this.isDebug) {
+            console.log('horizontal wincount: ' + winCount);
+        }
+        return winCount;
+    }
+
+    checkVerticalWins() {
+        let currentReelValue;
+        let compareReelValue;
+        let lineCount;
+        let winCount  = 0;
+        for (let i = 0; i < this.reelCol; i++) {
+            lineCount = 0;
+            for (let j = i; j < i + (this.reelCol * (this.reelRow - 1)); j += this.reelCol) {
+                currentReelValue = this.reelHolders[j].style.transform;
+                compareReelValue = this.reelHolders[j + this.reelCol].style.transform;
+                if (currentReelValue === compareReelValue) {
+                    lineCount++;
+                }
+            }
+            if (lineCount === (this.reelRow - 1)) {
+                winCount++;
+            }
+        }
+        if (this.isDebug) {
+            console.log('vertical linecount: ' + lineCount);
+        }
+        if (this.isDebug) {
+            console.log('vertical wincount: ' + winCount);
+        }
+        return winCount;
     }
 
     checkDiagonalWins() {
@@ -133,62 +202,13 @@ class SlotMachine {
         return winCount;
     }
 
-    checkHorizontalWins() {
-        let currentReelValue;
-        let compareReelValue;
-        let lineCount;
-        let winCount = 0;
-        for (let i = 0; i < this.reelRow; i++) {
-            lineCount = 0;
-            for (let j = i * this.reelRow; j < (i + 1) * this.reelCol - 1; j++) {
-                currentReelValue = this.reelHolders[j].style.transform;
-                compareReelValue = this.reelHolders[j + 1].style.transform;
-                if (currentReelValue === compareReelValue) {
-                    lineCount++;
-                }
-            }
-            if (lineCount === (this.reelRow - 1)) {
-                winCount++;
-            }
-        }
-        if (this.isDebug) {
-            console.log('horizontal linecount: ' + lineCount);
-        }
-        if (this.isDebug) {
-            console.log('horizontal wincount: ' + winCount);
-        }
-        return winCount;
-    }
-
-    checkVerticalWins() {
-        let currentReelValue;
-        let compareReelValue;
-        let lineCount;
-        let winCount  = 0;
-        for (let i = 0; i < this.reelRow; i++) {
-            lineCount = 0;
-            for (let j = i; j < i + (this.reelCol * (this.reelCol - 1)); j += this.reelCol) {
-                currentReelValue = this.reelHolders[j].style.transform;
-                compareReelValue = this.reelHolders[j + this.reelCol].style.transform;
-                if (currentReelValue === compareReelValue) {
-                    lineCount++;
-                }
-            }
-            if (lineCount === (this.reelRow - 1)) {
-                winCount++;
-            }
-        }
-        if (this.isDebug) {
-            console.log('vertical linecount: ' + lineCount);
-        }
-        if (this.isDebug) {
-            console.log('vertical wincount: ' + winCount);
-        }
-        return winCount;
-    }
-
-    getRandNumber() {
-        return Math.floor(Math.random() * this.reelPossibilities + 1);
+    getRandNumber(callback) {
+        let numRandRequests = "?randRequest=" + this.reelRow * this.reelCol;
+        let testRequest = new XMLHttpRequest();
+        let url = "http://slottest/getrandnum.php";
+        testRequest.addEventListener('load', callback);
+        testRequest.open('GET', url + numRandRequests);
+        testRequest.send();
     }
 }
 
