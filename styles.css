@@ -1,9 +1,28 @@
 body {
     background: black;
+    font-family: 'VT323', monospace;
+    color: white;
 }
 
-.container {
-    max-width: 500px;
+.input_container {
+
+}
+
+.slots-container {
+    display: flex;
+    max-width: 600px;
+    height: 800px;
+    justify-content: space-evenly;
+    margin: 50px auto;
+    border: 5px solid white;
+    flex-direction: column;
+    border-radius: 3%;
+}
+
+.title {
+    color: white;
+    text-align: center;
+    font-size: 120px;
 }
 
 .slot {
@@ -16,6 +35,7 @@ body {
     display: flex;
     flex-basis: 100%;
     flex-grow: 1;
+    justify-content: center;
 }
 
 .reel {
@@ -63,5 +83,29 @@ body {
     flex-basis: 100%;
     background: #8fa4ff;
     padding: 10px;
-    margin: 10px;
+    margin: 50px;
+    border: 5px solid white;
+    border-radius: 3%;
+    color: white;
 }
+
+.button:hover {
+    background: white;
+    color: #8fa4ff;
+    cursor: pointer;
+}
+
+#spin-message {
+    border: 3px solid white;
+    width: 70%;
+    height: 60px;
+    border-radius: 3%;
+    margin: 15px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 30px;
+    line-height: 2;
+}
+

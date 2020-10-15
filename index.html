@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Slot Machine</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="container">
+
+<div class="slots-container">
+    <div class="title">Slots!</div>
     <div class="slot" id="slot-machine-1">
         <div class="reels">
             <div id="reel-1" class="reel">
@@ -24,6 +27,16 @@
         </div>
         <div id="spin-message"></div>
     </div>
+
+    <div class="input_container">
+        <label for="rows">Rows:</label>
+        <input id="rows" type="range" name="rows" min="2" max="8" value="3">
+
+
+        <label for="columns">Columns:</label>
+        <input id="columns" type="range" name="columns" min="2" max="8" value="3">
+    </div>
+
 </div>
 <script src="slots.js" type="text/javascript"></script>
 </body>

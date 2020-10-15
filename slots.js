@@ -43,7 +43,8 @@ class SlotMachine {
 
     handleUserClick() {
         // reset the spin count and start spinning reel
-        document.getElementsByTagName('body')[0].style.background = 'black';
+        // document.getElementsByTagName('body')[0].style.background = 'black';
+        document.getElementById('spin-message').style.background = 'black';
         this.spin = 0;
         this.target.textContent = "";
         this.spinSequence();
@@ -67,9 +68,11 @@ class SlotMachine {
     spinSequenceEnd() {
         let winCount = this.countWins();
         if (winCount > 0) {
-            document.getElementsByTagName('body')[0].style.background = 'green';
-            return this.target.textContent = this.winMessage + ' Wins: ' + winCount;
+            document.getElementById('spin-message').style.background = 'green';
+            return this.target.textContent = `${this.winMessage}
+                                               Wins: ${winCount}`;
         }
+        document.getElementById('spin-message').style.background = 'red';
         return this.target.textContent = this.loseMessage;
     }
 
@@ -204,11 +207,11 @@ class SlotMachine {
 
     getRandNumber(callback) {
         let numRandRequests = "?randRequest=" + this.reelRow * this.reelCol;
-        let testRequest = new XMLHttpRequest();
-        let url = "http://slottest/getrandnum.php";
-        testRequest.addEventListener('load', callback);
-        testRequest.open('GET', url + numRandRequests);
-        testRequest.send();
+        let newRequest = new XMLHttpRequest();
+        let url = "http://slotmachine.com/getrandnum.php";
+        newRequest.addEventListener('load', callback);
+        newRequest.open('GET', url + numRandRequests);
+        newRequest.send();
     }
 }
 
