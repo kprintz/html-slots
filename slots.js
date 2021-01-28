@@ -1,8 +1,12 @@
 class SlotMachine {
     constructor(settings) {
         // getting DOM elements
+
+        this.playButton = document.getElementById('play-button');
+        this.playButton.addEventListener('click', this.handlePlayClick);
+
         this.classButton = document.getElementById('slot-button-1');
-        this.classButton.addEventListener('click', this.handleUserClick.bind(this));
+        this.classButton.addEventListener('click', this.handleSpinClick.bind(this));
         this.reelHolders = document.getElementsByClassName('reel-holder');
         this.spin = 0;
         this.target = document.getElementById('spin-message');
@@ -11,13 +15,48 @@ class SlotMachine {
         this.reelPossibilities = settings.reelPossibilities;
         this.reelHeight = settings.reelHeight;
         this.spinsLoopTilStop = settings.spinsLoopTilStop;
-        this.reelRow = settings.reelRow;
-        this.reelCol = settings.reelCol;
+        // this.reelRow = settings.reelRow;
+        // this.reelCol = settings.reelCol;
         this.spinMilliseconds = settings.spinMilliseconds;
         this.reelTemplate = document.getElementById('reel-1');
         this.isDebug = true;
 
         this.createSlotsHtml();
+    }
+
+    getReelRows() {
+        let rowSelection = document.getElementById('rows').value;
+        let numRows = 0;
+        rowSelection.addEventListener('click', function () {
+            numRows = parseInt(rowSelection);
+
+        })
+        console.log(numRows);
+    }
+
+    handlePlayClick() {
+        let welcomeMenu = document.getElementById("welcome-menu");
+        let playScreen = document.getElementById("play-screen");
+
+        let rowSelection = document.getElementById('rows');
+        let numRows = document.getElementById('rows').value;
+        rowSelection.addEventListener('click', function () {
+            numRows = parseInt(numRows);
+
+        })
+        console.log(numRows);
+
+        let colSelection = document.getElementById('columns');
+        let numCols = document.getElementById('columns').value;
+        colSelection.addEventListener('click', function () {
+            numCols = parseInt(numCols);
+
+        })
+        console.log(numCols);
+
+
+        welcomeMenu.classList.add("hide");
+        playScreen.classList.remove("hide");
     }
 
     createSlotsHtml() {
@@ -41,7 +80,7 @@ class SlotMachine {
         this.reelTemplate.remove();
     }
 
-    handleUserClick() {
+    handleSpinClick() {
         // reset the spin count and start spinning reel
         // document.getElementsByTagName('body')[0].style.background = 'black';
         document.getElementById('spin-message').style.background = 'black';
@@ -216,8 +255,8 @@ class SlotMachine {
 }
 
 let slotMachine = new SlotMachine({
-    reelRow: 3,
-    reelCol: 3,
+    // reelRow: parseInt(document.getElementById('rows').value),
+    // reelCol: parseInt(document.getElementById('columns').value),
     winMessage: 'Winner!',
     loseMessage: 'No goood',
     reelPossibilities: 4,

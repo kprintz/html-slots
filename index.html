@@ -8,7 +8,24 @@
 </head>
 <body>
 
-<div class="slots-container">
+<div class="start-container" id="welcome-menu">
+    <header class="welcome">Welcome to Slots! Please select the number of rows and columns you would like to play...</header>
+
+    <div class="input_container">
+        <label for="rows">Rows:</label>
+        <input id="rows" type="range" name="rows" min="2" max="8" value="3">
+
+
+        <label for="columns">Columns:</label>
+        <input id="columns" type="range" name="columns" min="2" max="8" value="3">
+    </div>
+
+    <div class="button-container">
+        <button class="button" id="play-button"><a href="#play-game">Play!</a></button>
+    </div>
+</div>
+
+<div class="slots-container hide" id="play-screen">
     <div class="title">Slots!</div>
     <div class="slot" id="slot-machine-1">
         <div class="reels">
@@ -26,15 +43,6 @@
             Spin
         </div>
         <div id="spin-message"></div>
-    </div>
-
-    <div class="input_container">
-        <label for="rows">Rows:</label>
-        <input id="rows" type="range" name="rows" min="2" max="8" value="3">
-
-
-        <label for="columns">Columns:</label>
-        <input id="columns" type="range" name="columns" min="2" max="8" value="3">
     </div>
 
 </div>
